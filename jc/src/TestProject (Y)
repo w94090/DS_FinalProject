@@ -1,0 +1,132 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+
+/**
+ * Servlet implementation class TestProject
+ */
+@WebServlet("/TestProject")
+public class TestProject extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public TestProject() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding("UTF-8");
+		response.setContentType("text/html");
+		if(request.getParameter("keyword")== null) {
+			String requestUri = request.getRequestURI();
+			request.setAttribute("requestUri", requestUri);
+			request.getRequestDispatcher("Search.jsp").forward(request, response);
+			return;
+		}
+		ArrayList<Keyword> keyword = new ArrayList<Keyword>();
+		Keyword k = new Keyword("finance", 10);
+		Keyword k2 = new Keyword("stock", 10);
+		Keyword k3 = new Keyword("bloomberg", 1000);
+		keyword.add(k);
+		keyword.add(k2);
+		keyword.add(k3);
+		
+		GoogleQuery google = new GoogleQuery(request.getParameter("keyword"));
+		WebPage rootPage = new WebPage(google.url, "google search");
+		WebTree tree =new WebTree(rootPage);
+		
+		
+		
+		
+		HashMap<String, String> query = google.query();
+		String[][] s = new String[query.size()][2];
+		request.setAttribute("query", s);
+		int num = 0;
+		for(Entry<String, String> entry : query.entrySet()) {
+		   
+		    String value = entry.getValue();
+		    
+		    
+		    //System.out.println(value+"");
+		    URL url;
+		    if(value.contains("map")) {
+			    url = new URL(value);
+		    }
+		    else if(value.contains("mof")) {
+		    	url=new URL("https://www.google.com.tw/");
+		    }
+		    else if (value.contains("search")&&value.contains("google")) {
+		    	url=new URL(value);
+		    }
+		    else if(value.contains("books")) {
+		    	url=new URL(value);
+		    }
+		    else {
+			    url = new URL("https://www.google.com.tw/"+value);
+		    }
+		    WebPage Pager = new WebPage(url+"", entry.getKey());
+		    WebNode child = new WebNode(Pager);
+		    tree.root.addChild(child);
+		    
+		    ChildQuery childr = new ChildQuery(Pager.url);
+		    ArrayList<String> children = childr.query();
+		    
+		    String[][] c = new String[query.size()][2];
+		    request.setAttribute("children", c);
+		    WebTree rootchild = new WebTree(child.webPage);
+		   
+		   
+		  
+		    
+		    Pager.setScore(keyword);
+			System.out.println(keyword);
+			tree.setPostOrderScore(keyword);
+			System.out.println(Pager.score);
+		}
+		for(Entry<String,String> enry : query.entrySet()) {
+			
+			s[num][0] = tree.root.children.get(num).webPage.name;
+		    s[num][1] = tree.root.children.get(num).webPage.url;
+		    
+		    num++;
+		}
+		request.getRequestDispatcher("googleitem.jsp")
+		 .forward(request, response); 
+		
+	}
+	
+	
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
