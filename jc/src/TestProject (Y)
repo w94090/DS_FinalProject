@@ -17,6 +17,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Pattern;
+
+import sun.security.validator.ValidatorException;
+
 
 
 /**
@@ -47,13 +51,17 @@ public class TestProject extends HttpServlet {
 			request.getRequestDispatcher("Search.jsp").forward(request, response);
 			return;
 		}
+		// 關鍵字我設在這裡
 		ArrayList<Keyword> keyword = new ArrayList<Keyword>();
 		Keyword k = new Keyword("finance", 10);
 		Keyword k2 = new Keyword("stock", 10);
-		Keyword k3 = new Keyword("bloomberg", 1000);
+		Keyword k3 = new Keyword("bloomberg",10);
+		
 		keyword.add(k);
 		keyword.add(k2);
 		keyword.add(k3);
+		
+		
 		
 		GoogleQuery google = new GoogleQuery(request.getParameter("keyword"));
 		WebPage rootPage = new WebPage(google.url, "google search");
@@ -80,7 +88,7 @@ public class TestProject extends HttpServlet {
 		    	url=new URL("https://www.google.com.tw/");
 		    }
 		    else if (value.contains("search")&&value.contains("google")) {
-		    	url=new URL(value);
+		    	url=new URL("https://www.google.com.tw/"+value);
 		    }
 		    else if(value.contains("books")) {
 		    	url=new URL(value);
@@ -94,21 +102,38 @@ public class TestProject extends HttpServlet {
 		    
 		    ChildQuery childr = new ChildQuery(Pager.url);
 		    ArrayList<String> children = childr.query();
-		    
-		    String[][] c = new String[query.size()][2];
-		    request.setAttribute("children", c);
-		    WebTree rootchild = new WebTree(child.webPage);
-		   
-		   
-		  
-		    
+		    int index=0;
+		    for(int i=0; i<5;i++) { //他會跑前5個子網頁的超連結
+		    	try {
+		    		
+		    		if(children.get(i).contains("linkedin")) {
+		    			System.out.println("抓到你了");
+		    		}else if(children.get(i).contains("cdibh")) {
+		    			System.out.println("還趕躲阿");
+		    		}else {
+		    			GrandChildQuery grandch = new GrandChildQuery(children.get(i));
+				    	ArrayList<String> grandch2 = grandch.query();
+				    	double num2 = StringCounter(grandch2.get(index),keyword);
+				    	Pager.score+=num2; //把子網頁內文全部加進去母網頁的分數
+		    		}
+		    		
+			    	index++;
+		    	}catch(Exception e) {
+		    		System.out.println("給我跑到這喔");
+		    		//遇到網頁有問題沒辦法爬的時候就會到這
+		    	}
+		    /*	catch (IndexOutOfBoundsException e) {
+					// TODO: handle exception
+		    		System.out.println("愛探險的Dora");
+				}**/
+		    }
+		    //下方是算母網頁內文的分數 ( 而此時母網頁已經有子網頁的分數加乘了 )
 		    Pager.setScore(keyword);
-			System.out.println(keyword);
 			tree.setPostOrderScore(keyword);
 			System.out.println(Pager.score);
 		}
 		for(Entry<String,String> enry : query.entrySet()) {
-			
+			//這個就是跑上去讓它顯示，並且也排列過了
 			s[num][0] = tree.root.children.get(num).webPage.name;
 		    s[num][1] = tree.root.children.get(num).webPage.url;
 		    
@@ -119,7 +144,28 @@ public class TestProject extends HttpServlet {
 		
 	}
 	
+	public double StringCounter (String url4,ArrayList<Keyword> kl) {
+		//這裡要寫算字串裡有出現多少關鍵字
+		//To do a case-insensitive search, we turn the whole content and keyword into upper-case:
+		int retVal=0;
+		for(Keyword k: kl) {
+			String u = null;
+			url4 = url4.toUpperCase();
+			u = k.name.toUpperCase();
+			
+			
+			int fromIdx = 0;
+			int found = -1;
+		
+			while ((found = url4.indexOf(u, fromIdx)) != -1){
+			    retVal=retVal+1;
+			    fromIdx = found + u.length();
+			}
+		}
+		
 	
+		return retVal;
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
