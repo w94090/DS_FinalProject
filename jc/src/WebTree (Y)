@@ -23,6 +23,7 @@ public class WebTree {
 			for(WebNode c:startNode.children) {
 				c.setNodeScore(keywords);
 				startNode.nodeScore+=c.nodeScore;
+				
 			}
 			this.quickSort(0, startNode.children.size()-1);
 			
