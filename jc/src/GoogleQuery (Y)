@@ -36,11 +36,20 @@ public class GoogleQuery
 	public GoogleQuery(String searchKeyword) 
 
 	{
+		if(searchKeyword.contains(" ")) {
+			
+			System.out.println(searchKeyword.indexOf(" "));
+			String keyword1 = searchKeyword.substring(0,searchKeyword.indexOf(" "));
+			String keyword2 = searchKeyword.substring(searchKeyword.indexOf(" ")+1,searchKeyword.length());
 
-		this.searchKeyword = searchKeyword;
+			this.url = "http://www.google.com/search?q="+keyword1+"+"+keyword2+"&oe=utf8&num=10&hl=en";
+		}else {
+			this.searchKeyword = searchKeyword;
 
-		this.url = "http://www.google.com/search?q="+searchKeyword+"&oe=utf8&num=10&hl=en";
+			this.url = "http://www.google.com/search?q="+searchKeyword+"&oe=utf8&num=10&hl=en";
 
+		}
+		
 	}
 	
 
