@@ -62,7 +62,7 @@ public class TestProject extends HttpServlet {
 		keyword.add(k3);
 		
 		
-		
+		System.out.println("我還是愛你"+request.getParameter("keyword"));
 		GoogleQuery google = new GoogleQuery(request.getParameter("keyword"));
 		WebPage rootPage = new WebPage(google.url, "google search");
 		WebTree tree =new WebTree(rootPage);
@@ -77,28 +77,33 @@ public class TestProject extends HttpServlet {
 		for(Entry<String, String> entry : query.entrySet()) {
 		   
 		    String value = entry.getValue();
-		    
-		    
+		    WebPage Pager = null;
+		    WebNode child =null;
 		    //System.out.println(value+"");
 		    URL url;
-		    if(value.contains("map")) {
-			    url = new URL(value);
+		    try {
+		    	 if(value.contains("map")) {
+					    url = new URL(value);
+				    }
+				    else if(value.contains("mof")) {
+				    	url=new URL("https://www.google.com.tw/");
+				    }
+				    else if (value.contains("search")&&value.contains("google")) {
+				    	url=new URL("https://www.google.com.tw/"+value);
+				    }
+				    else if(value.contains("books")) {
+				    	url=new URL(value);
+				    }
+				    else {
+					    url = new URL("https://www.google.com.tw/"+value);
+				    }
+				    Pager = new WebPage(url+"", entry.getKey());
+				    child = new WebNode(Pager);
+				    tree.root.addChild(child);
+		    }catch(Exception e) {
+		    	System.out.println("haha");
 		    }
-		    else if(value.contains("mof")) {
-		    	url=new URL("https://www.google.com.tw/");
-		    }
-		    else if (value.contains("search")&&value.contains("google")) {
-		    	url=new URL("https://www.google.com.tw/"+value);
-		    }
-		    else if(value.contains("books")) {
-		    	url=new URL(value);
-		    }
-		    else {
-			    url = new URL("https://www.google.com.tw/"+value);
-		    }
-		    WebPage Pager = new WebPage(url+"", entry.getKey());
-		    WebNode child = new WebNode(Pager);
-		    tree.root.addChild(child);
+		   
 		    
 		    ChildQuery childr = new ChildQuery(Pager.url);
 		    ArrayList<String> children = childr.query();
