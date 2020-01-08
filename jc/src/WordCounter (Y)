@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
+import com.sun.xml.internal.txw2.Document;
+
 public class WordCounter {
 	private String urlStr;
     private String content;
@@ -38,10 +40,24 @@ public class WordCounter {
 		}
 		return retVal;
 	}
+   /* public String htmlParseTitle() throws IOException
+    
+    {
+    	String retVal2 = "";
+    	URL url = new URL(urlStr);
+    	try {
+    		Document
+    		
+    	}
+    	catch(IOException e) {
+    		System.out.println("Oops");
+    	}
+    }**/
     
     public int countKeyword(String keyword) throws IOException{
 		if (content == null){
 		    content = fetchContent();
+		    
 		}
 		
 		//To do a case-insensitive search, we turn the whole content and keyword into upper-case:
