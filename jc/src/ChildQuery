@@ -1,4 +1,4 @@
-import java.io.BufferedReader;
+\import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +12,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import sun.security.validator.ValidatorException;
 
 public class ChildQuery 
 {
@@ -59,13 +61,13 @@ public class ChildQuery
 		{
 
 			content= fetchContent();
-			System.out.println(content);
+			System.out.println("She is here !!"+content);
 		}
 
-		ArrayList<String> retVal = new ArrayList();
-		
+		ArrayList<String> retVal = new ArrayList<String>();
+		//這裡可能也要寫母網頁內文的關鍵字計算方法 ( 後來發現webpage那邊就有算了
 		Document doc = Jsoup.parse(content);
-		System.out.println(doc.text());
+		System.out.println("You are here !!!"+doc.text());
 		Elements selectsElements = doc.select("script");
 		for(Element scriptElement : selectsElements) {
 			scriptElement.remove();
@@ -75,37 +77,45 @@ public class ChildQuery
 		
 		for(Element a : links) {
 			try {
-				
 				String childUrl = a.attr("href");
 //				String childTitle = a.select(".body").get(0).text();
 //				String childArticle = a.select(".body").text();
 //				System.out.println(childArticle);
 				if(childUrl.contains("search")&&childUrl.contains("google")) {
-					retVal.add(childUrl);
+					if(!childUrl.startsWith("https")||!childUrl.startsWith("http")) {
+						System.out.println("這位可以先借過嗎");
+					}else {
+						//:)))))
+						retVal.add(childUrl);
+					}
 				}else {
-					retVal.add(urlStr.substring(33)+childUrl);
+					if(childUrl.startsWith("https")||childUrl.startsWith("http")) {
+						//:))))
+						if(childUrl.contains("linkedin")) {
+							System.out.println("你被判出局了");
+						}
+						else if(childUrl.contains("cdibh")) {
+							System.out.println("你也被判出局摟");
+						}else {
+							retVal.add(childUrl);
+							System.out.println(childUrl);
+						}
+						
+					}
+					else {
+						//反正應該是不會跑到這
+						String retVal2 = urlStr.substring(33)+childUrl;
+					}
+					
 				}
-				
 			}
 			
 			catch(IndexOutOfBoundsException e) {
-				System.out.println("子網頁");
+				System.out.println("我愛你郁方<3");
 			}
 			
+			
 		}
-		
-		
-		
 		return retVal;
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	}	
 }
