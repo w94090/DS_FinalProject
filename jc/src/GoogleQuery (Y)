@@ -11,8 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import java.util.HashMap;
-
-
+import java.util.Iterator;
 
 import org.jsoup.Jsoup;
 
@@ -34,7 +33,7 @@ public class GoogleQuery
 
 	public String content;
 
-	public GoogleQuery(String searchKeyword)
+	public GoogleQuery(String searchKeyword) 
 
 	{
 
@@ -85,24 +84,33 @@ public class GoogleQuery
 		HashMap<String, String> retVal = new HashMap<String, String>();
 		
 		Document doc = Jsoup.parse(content);
-		System.out.println(doc.text());
+		System.out.println("I am here !!!"+doc.text());
+		Elements lis2= null;
+		if(url.contains("yahoo")) 
+		{
+			lis2 = doc.select("span");
+		}
+		else if(url.contains("dictionary")) {
+			lis2 = doc.select("span.hw haf");
+			System.out.println(lis2+"\n"+"我在這阿");
+		}
+		else 
+		{
+			 lis2 = doc.select("span");
+		}
+		
 		Elements lis = doc.select("div");
 		
-		
 		lis = lis.select(".ZINbbc");
-		
-		
 		System.out.println(lis.size());
-		
-		
+		Element thisOne = null;
 		for(Element li : lis)
 		{
 			try 
 
 			{
 				String title = li.select(".BNeawe").get(0).text();
-				String citeUrl = li.select("a").get(0).attr("href");
-				
+				String citeUrl = li.select("a").get(0).attr("href");			
 //				for(int i = 0 ; i < block.size(); i++)
 //					System.out.println(block.get(i).text());
 				
@@ -111,31 +119,30 @@ public class GoogleQuery
 				
 //				String title = block.get(1).text();
 //				String citeUrl = block.get(2).text();
-				
-				
-
 				retVal.put(title, citeUrl);
-
-				
-
 			} catch (IndexOutOfBoundsException e) {
-
 				System.out.print("k");
-
 			}
-
-			
-
 		}
-
-		
-
+		for(Iterator it=lis2.iterator();it.hasNext();) 
+		{
+			try 
+			{
+				thisOne = (Element) it.next();
+				System.out.print(thisOne.html());
+			
+			}catch(IndexOutOfBoundsException e) 
+			{
+				System.out.println("oops");
+			
+			}
+			
+		}
 		return retVal;
 
+	} 
+	
+
+	
+
 	}
-
-	
-
-	
-
-}
