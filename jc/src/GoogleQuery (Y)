@@ -41,12 +41,13 @@ public class GoogleQuery
 			System.out.println(searchKeyword.indexOf(" "));
 			String keyword1 = searchKeyword.substring(0,searchKeyword.indexOf(" "));
 			String keyword2 = searchKeyword.substring(searchKeyword.indexOf(" ")+1,searchKeyword.length());
-
-			this.url = "http://www.google.com/search?q="+keyword1+"+"+keyword2+"&oe=utf8&num=10&hl=en";
-		}else {
+			String searchKeyword2= keyword1+"+"+keyword2;
+			this.url = "http://www.google.com/search?q="+searchKeyword2+"finance"+"&oe=utf8&num=10&hl=en";
+		}
+		else {
 			this.searchKeyword = searchKeyword;
-
-			this.url = "http://www.google.com/search?q="+searchKeyword+"&oe=utf8&num=10&hl=en";
+			System.out.println(searchKeyword);
+			this.url = "http://www.google.com/search?q="+searchKeyword+"finance"+"&oe=utf8&num=10&hl=en";
 
 		}
 		
