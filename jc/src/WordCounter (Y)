@@ -18,27 +18,34 @@ public class WordCounter {
     private String fetchContent() throws IOException
 
 	{
-		String retVal = "";
+    	String retVal = "";
+    	try {
+    		
 
-		URL u = new URL(urlStr);
+    		URL u = new URL(urlStr);
 
-		URLConnection conn = u.openConnection();
+    		URLConnection conn = u.openConnection();
 
-		conn.setRequestProperty("User-agent", "Chrome/7.0.517.44");
+    		conn.setRequestProperty("User-agent", "Chrome/7.0.517.44");
 
-		InputStream in = conn.getInputStream();
+    		InputStream in = conn.getInputStream();
 
-		InputStreamReader inReader = new InputStreamReader(in,"utf-8");
+    		InputStreamReader inReader = new InputStreamReader(in,"utf-8");
 
-		BufferedReader bufReader = new BufferedReader(inReader);
-		String line = null;
+    		BufferedReader bufReader = new BufferedReader(inReader);
+    		String line = null;
 
-		while((line=bufReader.readLine())!=null)
-		{
-			retVal += line;
+    		while((line=bufReader.readLine())!=null)
+    		{
+    			retVal += line;
 
+    		}
+    		
+    	}catch (Exception e) {
+			System.out.println("Out");
+    		// TODO: handle exception
 		}
-		return retVal;
+    	return retVal;
 	}
    /* public String htmlParseTitle() throws IOException
     
