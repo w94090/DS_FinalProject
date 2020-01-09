@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,9 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Pattern;
 
-import sun.security.validator.ValidatorException;
 
 
 
@@ -89,7 +88,7 @@ public class TestProject extends HttpServlet {
 				    	url=new URL("https://www.google.com.tw/");
 				    }
 				    else if (value.contains("search")&&value.contains("google")) {
-				    	url=new URL("https://www.google.com.tw/"+value);
+				    	url=new URL(value);
 				    }
 				    else if(value.contains("books")) {
 				    	url=new URL(value);
