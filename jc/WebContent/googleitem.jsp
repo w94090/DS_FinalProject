@@ -9,21 +9,36 @@
 <meta charset="utf-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, user-scalable=no">
-<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="./css/googleitem.css">
 </head>
-<body>
+<body  style="background-image: url(./img/duotone-3.png);">
+
+<header class="header">Searching Result
+
+
+<div id="wrap">
+  <form action="${requestUri}" autocomplete="on" method="get">
+  <input id="search" name="search" type="text" placeholder="What're we looking for ?"><input id="search_submit" value="Rechercher" type="submit">
+  </form>
+</div>
+</header>
+<br>
+<br>
+<hr class="style-three">
+
 	<%
 		String[][] orderList = (String[][]) request.getAttribute("query");
 		for (int i = 0; i < orderList.length; i++) {
 	%>
+	<div>
 	<a href='<%=orderList[i][1]%>'><%=orderList[i][0]%></a>
+	<hr >
 	<br>
-	<h style="font-size:5px ;"><%=orderList[i][1]%></h>
 	<br>
-	<br>
-	<hr>
+	</div>	
 	<%
 		}
 	%>
+
 </body>
 </html>
