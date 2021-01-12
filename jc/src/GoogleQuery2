@@ -1,0 +1,158 @@
+import java.io.BufferedReader;
+
+import java.io.IOException;
+
+import java.io.InputStream;
+
+import java.io.InputStreamReader;
+
+import java.net.URL;
+
+import java.net.URLConnection;
+
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.jsoup.Jsoup;
+
+import org.jsoup.nodes.Document;
+
+import org.jsoup.nodes.Element;
+
+import org.jsoup.select.Elements;
+
+
+
+public class GoogleQuery2 
+
+{
+
+	public String searchKeyword;
+
+	public String url;
+
+	public String content;
+
+	public GoogleQuery2(String searchKeyword) 
+
+	{
+		if(searchKeyword.contains(" ")) {
+			
+			System.out.println(searchKeyword.indexOf(" "));
+			String keyword1 = searchKeyword.substring(0,searchKeyword.indexOf(" "));
+			String keyword2 = searchKeyword.substring(searchKeyword.indexOf(" ")+1,searchKeyword.length());
+			String searchKeyword2= keyword1+"+"+keyword2;
+			this.url = "http://www.google.com.tw/search?q="+searchKeyword2+"finance"+"&oe=utf8&num=10";
+		}
+		else {
+			this.searchKeyword = searchKeyword;
+			System.out.println(searchKeyword);
+			this.url = "http://www.google.com.tw/search?q="+searchKeyword+"finance"+"&oe=utf8&num=10";
+
+		}
+		
+	}
+	
+
+	private String fetchContent() throws IOException
+
+	{
+		String retVal = "";
+
+		URL u = new URL(url);
+
+		URLConnection conn = u.openConnection();
+
+		conn.setRequestProperty("User-agent", "Chrome/7.0.517.44");
+
+		InputStream in = conn.getInputStream();
+
+		InputStreamReader inReader = new InputStreamReader(in,"utf-8");
+
+		BufferedReader bufReader = new BufferedReader(inReader);
+		String line = null;
+
+		while((line=bufReader.readLine())!=null)
+		{
+			retVal += line;
+
+		}
+		return retVal;
+	}
+	public HashMap<String, String> query() throws IOException
+
+	{
+
+		if(content==null)
+
+		{
+
+			content= fetchContent();
+			
+		}
+
+		HashMap<String, String> retVal = new HashMap<String, String>();
+		
+		Document doc = Jsoup.parse(content);
+		System.out.println("I am here !!!"+doc.text());
+		Elements lis2= null;
+		if(url.contains("yahoo")) 
+		{
+			lis2 = doc.select("span");
+		}
+		else if(url.contains("dictionary")) {
+			lis2 = doc.select("span.hw haf");
+			System.out.println(lis2+"\n"+"我在這阿");
+		}
+		else 
+		{
+			 lis2 = doc.select("span");
+		}
+		
+		Elements lis = doc.select("div");
+		
+		lis = lis.select(".ZINbbc");
+		System.out.println(lis.size());
+		Element thisOne = null;
+		for(Element li : lis)
+		{
+			try 
+
+			{
+				String title = li.select(".BNeawe").get(0).text();
+				String citeUrl = li.select("a").get(0).attr("href");			
+//				for(int i = 0 ; i < block.size(); i++)
+//					System.out.println(block.get(i).text());
+				
+//				System.out.println(block.get(1).text());
+//				System.out.println(block.get(2).text());
+				
+//				String title = block.get(1).text();
+//				String citeUrl = block.get(2).text();
+				retVal.put(title, citeUrl);
+			} catch (IndexOutOfBoundsException e) {
+				System.out.print("k");
+			}
+		}
+		for(Iterator it=lis2.iterator();it.hasNext();) 
+		{
+			try 
+			{
+				thisOne = (Element) it.next();
+				System.out.print(thisOne.html());
+			
+			}catch(IndexOutOfBoundsException e) 
+			{
+				System.out.println("oops");
+			
+			}
+			
+		}
+		return retVal;
+
+	} 
+	
+
+	
+
+	}

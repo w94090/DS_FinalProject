@@ -1,0 +1,81 @@
+import java.io.IOException;
+import java.util.ArrayList;
+
+import sun.reflect.generics.tree.Tree;
+
+
+public class WebTree {
+	public WebNode root;
+	
+	public WebTree(WebPage rootPage){
+		this.root = new WebNode(rootPage);
+	}
+	
+	public void setPostOrderScore(ArrayList<Keyword> keywords) throws IOException{
+		setPostOrderScore(root, keywords);
+	}
+	
+	private void setPostOrderScore(WebNode startNode, ArrayList<Keyword> keywords) throws IOException{
+		
+		startNode.setNodeScore(keywords);
+		
+			
+			for(WebNode c:startNode.children) {
+				c.setNodeScore(keywords);
+				startNode.nodeScore+=c.nodeScore;
+				
+			}
+			this.quickSort(0, startNode.children.size()-1);
+			
+	}
+	private void quickSort(int leftbound, int rightbound){
+		
+		if(leftbound>=rightbound) {
+			return;
+		}
+		double pivot = root.children.get(rightbound).nodeScore;
+		int Index = leftbound;
+		for(int k=leftbound; k<rightbound; k++) {
+			if(root.children.get(k).nodeScore>=pivot) {
+				swap(k, Index);
+				Index++;
+			}
+		}
+		swap(Index,rightbound);
+		quickSort(Index+1,rightbound);
+		quickSort(leftbound,Index-1);
+	}
+    private void swap(int aIndex, int bIndex){
+		WebNode temp = root.children.get(aIndex);
+		root.children.set(aIndex, root.children.get(bIndex));
+		root.children.set(bIndex, temp);
+	}
+	
+	public void eularPrintTree(){
+		eularPrintTree(root);
+	}
+	
+	private void eularPrintTree(WebNode startNode){
+		int nodeDepth = startNode.getDepth();
+		
+		if(nodeDepth > 1) System.out.print("\n" + repeat("\t", nodeDepth-1));
+		System.out.print("(");
+		System.out.print(startNode.webPage.name+","+startNode.nodeScore);
+		
+		for(WebNode child : startNode.children){
+			eularPrintTree(child);
+
+		}
+		System.out.print(")");
+		if(startNode.isTheLastChild()) System.out.print("\n" + repeat("\t", nodeDepth-2));
+		
+	}
+	
+	private String repeat(String str,int repeat){
+		String retVal  = "";
+		for(int i=0;i<repeat;i++){
+			retVal+=str;
+		}
+		return retVal;
+	}
+}

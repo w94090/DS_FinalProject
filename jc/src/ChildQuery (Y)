@@ -1,0 +1,141 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import sun.security.validator.ValidatorException;
+
+public class ChildQuery 
+{
+	public String urlStr;
+	
+	public String content;
+	
+	public ChildQuery(String url) {
+		this.urlStr=url;
+		
+	}
+	
+	private String fetchContent() throws IOException
+
+	{
+		String retVal = "";
+		
+		
+		URL u = new URL(urlStr);
+
+		URLConnection conn = u.openConnection();
+
+		conn.setRequestProperty("User-agent", "Chrome/7.0.517.44");
+
+		InputStream in = conn.getInputStream();
+
+		InputStreamReader inReader = new InputStreamReader(in,"utf-8");
+
+		BufferedReader bufReader = new BufferedReader(inReader);
+		String line = null;
+
+		while((line=bufReader.readLine())!=null)
+		{
+			retVal += line;
+
+		}
+		return retVal;
+	}
+	public ArrayList<String> query() throws IOException,FileNotFoundException
+
+	{
+
+		if(content==null)
+
+		{
+			try {
+				content= fetchContent();
+				System.out.println("She is here !!"+content);
+			}catch (Exception e) {
+				System.out.println("hihi");
+			}
+			
+		}
+
+		ArrayList<String> retVal = new ArrayList<String>();
+		Elements links =null;
+		//這裡可能也要寫母網頁內文的關鍵字計算方法 ( 後來發現webpage那邊就有算了
+		try {
+			Document doc = Jsoup.parse(content);
+			System.out.println("You are here !!!"+doc.text());
+			
+			
+//			lis = lis.select(".ZINbbc");
+			links = doc.select("a");
+		}catch(Exception e) {
+			System.out.println("西西");
+		}
+
+		try {
+			for(Element a : links) {
+				try {
+					String childUrl = a.attr("href");
+//					String childTitle = a.select(".body").get(0).text();
+//					String childArticle = a.select(".body").text();
+//					System.out.println(childArticle);
+					if(childUrl.contains("search")&&childUrl.contains("google")) {
+						if(!childUrl.startsWith("https")||!childUrl.startsWith("http")) {
+							System.out.println("這位可以先借過嗎");
+						}else {
+							//:)))))
+							retVal.add(childUrl);
+						}
+					}else {
+						if(childUrl.startsWith("https")||childUrl.startsWith("http")) {
+							//:))))
+							if(childUrl.contains("linkedin")) {
+								System.out.println("你被判出局了");
+							}
+							else if(childUrl.contains("cdibh")) {
+								System.out.println("你也被判出局摟");
+							}else {
+								retVal.add(childUrl);
+								System.out.println(childUrl);
+							}
+							
+						}
+						else {
+							//反正應該是不會跑到這
+							String retVal2 = urlStr.substring(33)+childUrl;
+						}
+						
+					}
+				}
+				
+				catch(Exception e) {
+					System.out.println("我愛你郁方<3");
+				}	
+			}
+		}catch(Exception e) {
+			System.out.println("vuvu");
+		}
+
+		return retVal;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}
